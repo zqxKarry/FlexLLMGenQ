@@ -89,6 +89,7 @@ def get_choice(cur_percent, percents, choices):
     return choices[-1]
 
 
+#初始化权重列表
 def init_weight_list(weight_specs, policy, env):
     dev_percents = [policy.w_disk_percent, policy.w_cpu_percent, policy.w_gpu_percent]
     dev_choices = [env.disk, env.cpu, env.gpu]

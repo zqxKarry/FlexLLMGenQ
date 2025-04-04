@@ -89,7 +89,6 @@ def get_choice(cur_percent, percents, choices):
     return choices[-1]
 
 
-#初始化权重列表
 def init_weight_list(weight_specs, policy, env):
     dev_percents = [policy.w_disk_percent, policy.w_cpu_percent, policy.w_gpu_percent]
     dev_choices = [env.disk, env.cpu, env.gpu]
@@ -647,6 +646,7 @@ class OptLM:
             os.path.join(self.path, f"{self.config.name}-np")))
         check_path = os.path.join(expanded_path, "decoder.embed_positions.weight")
         if not os.path.exists(check_path) and DUMMY_WEIGHT not in check_path:
+            print(f"self.config.name:{self.config.name}  self.path:{self.path}")
             download_opt_weights(self.config.name, self.path)
 
         self.layers[j].init_weight(self.weight_home[j], expanded_path)
@@ -1182,7 +1182,7 @@ def run_flexllmgen(args):
     if args.model == "facebook/galactica-30b":
         tokenizer = AutoTokenizer.from_pretrained("facebook/galactica-30b", padding_side="left")
     else:
-        tokenizer = AutoTokenizer.from_pretrained("facebook/opt-30b", padding_side="left")
+        tokenizer = AutoTokenizer.from_pretrained(args.path, padding_side="left")
     num_prompts = args.num_gpu_batches * args.gpu_batch_size
     prompt_len, gen_len, cut_gen_len = args.prompt_len, args.gen_len, args.cut_gen_len
 
@@ -1217,6 +1217,7 @@ def run_flexllmgen(args):
           f"hidden size (prefill): {hidden_size/GB:.3f} GB")
 
     print("init weight...")
+    print(f"args.path:{args.path}")
     model = OptLM(opt_config, env, args.path, policy)
 
     try:
@@ -1323,6 +1324,7 @@ if __name__ == "__main__":
     add_parser_arguments(parser)
     args = parser.parse_args()
 
+    print(f"Path:{args.path}")
     assert len(args.percent) == 6
 
     run_flexllmgen(args)

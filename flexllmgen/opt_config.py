@@ -220,18 +220,23 @@ def download_opt_weights(model_name, path):
     from huggingface_hub import snapshot_download
     import torch
 
-    print(f"Load the pre-trained pytorch weights of {model_name} from huggingface. "
-          f"The downloading and cpu loading can take dozens of minutes. "
-          f"If it seems to get stuck, you can monitor the progress by "
-          f"checking the memory usage of this process.")
+    #print(f"Load the pre-trained pytorch weights of {model_name} from huggingface. "
+    #      f"The downloading and cpu loading can take dozens of minutes. "
+    #      f"If it seems to get stuck, you can monitor the progress by "
+    #      f"checking the memory usage of this process.")
+    print("Load local model...")
 
     if "opt" in model_name:
         hf_model_name = "facebook/" + model_name
     elif "galactica" in model_name:
         hf_model_name = "facebook/" + model_name
 
-    folder = snapshot_download(hf_model_name, allow_patterns="*.bin")
-    bin_files = glob.glob(os.path.join(folder, "*.bin"))
+    #folder = snapshot_download(hf_model_name, allow_patterns="*.bin")
+    #bin_files = glob.glob(os.path.join(folder, "*.bin"))
+    # 获取本地权重文件
+    bin_files = glob.glob(os.path.join(path, "*.bin"))
+    if not bin_files:
+        raise FileNotFoundError(f"No .bin files found in {local_path}")
 
     if "/" in model_name:
         model_name = model_name.split("/")[1].lower()
@@ -259,5 +264,4 @@ if __name__ == "__main__":
     parser.add_argument("--model", type=str)
     parser.add_argument("--path", type=str, default="~/opt_weights")
     args = parser.parse_args()
-
     download_opt_weights(args.model, args.path)

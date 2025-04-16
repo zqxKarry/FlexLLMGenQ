@@ -143,7 +143,7 @@ def get_ds_opt_model(model_name, dtype, cpu_offload, disk_offload, offload_dir,
     dschf = HfDeepSpeedConfig(ds_config)
 
     model = OPTForCausalLM.from_pretrained(
-        dummy_weights or model_name, torch_dtype=dtype)
+        "/data/opt-6.7b", torch_dtype=dtype)    #dummy_weights or model_name
     model = model.eval()
     ds_engine = deepspeed.initialize(model=model, config_params=ds_config)[0]
     ds_engine.module.eval()
@@ -212,7 +212,7 @@ def get_hf_opt_model(model_name, dtype, cpu_offload, disk_offload, offload_dir,
 def run_generation(model_name, batch_size, prompt_len, gen_len, cut_gen_len,
                    cpu_offload, disk_offload, offload_dir, use_int8,
                    num_nodes, num_gpus_per_node, use_deepspeed, dummy,
-                   output_file, pkl_file, no_log, verbose):
+                   output_file, pkl_file, no_log, verbose, path):
     # Load tokenizer
     tokenizer = AutoTokenizer.from_pretrained(
         model_name.replace("175b", "66b"), padding_side="left")
